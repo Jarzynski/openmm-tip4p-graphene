@@ -1,0 +1,17 @@
+<ForceField>
+ <AtomTypes>
+  <Type name="GRA-C" class="CW" element="C" mass="12.015324"/>
+ </AtomTypes>
+ <Residues>
+  <Residue name="GRA">
+   <Atom charge="0.0" name="C" type="GRA-C"/>
+  </Residue>
+ </Residues>
+ <NonbondedForce coulomb14scale="1.0" lj14scale="1.0">
+  <UseAttributeFromResidue name="charge"/>
+   <Atom epsilon="0.0" sigma="1.0" type="GRA-C"/>
+ </NonbondedForce>
+ <LennardJonesForce lj14scale="1.0">
+  <Atom epsilon="0.4899" sigma="0.3214" type="GRA-C"/>
+ </LennardJonesForce>
+</ForceField>
