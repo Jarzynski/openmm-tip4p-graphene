@@ -53,43 +53,6 @@ system = forcefield.createSystem(topology, nonbondedMethod=nonbondedMethod, nonb
 # removing all center of mass motion by CMMotionRemover
 system.addForce(CMMotionRemover(500))
 
-# Add a CustomNonbondedForce
-# system.addForce(CustomNonbondedForce('4*epsilon*((sigma/r)^12-(sigma/r)^6); sigma=0.5*(sigma1+sigma2); epsilon=sqrt(epsilon1*epsilon2); sigma1=sigma[atom1]; sigma2=sigma[atom2]; epsilon1=epsilon[atom1]; epsilon2=epsilon[atom2]'))
-energy_function = '-amplitude_all*r*r*amplitude*(0.3*exp0^(-(r-mu1)^2/(2*sigma1^2))+exp0^(-(r-mu2)^2/(2*sigma2^2))+0.65*exp0^(-(r-mu3)^2/(2*sigma3^2))-0.6*exp0^(-(r-mu4)^2/(2*sigma4^2)))/u_max/u_max;'
-energy_function += 'amplitude = floor(amplitude_i1 + amplitude_i2);'
-
-o_particles1 = set(range(4536,topology.getNumAtoms(),4))
-o_particles2 = set(range(4536,topology.getNumAtoms(),4))
-custom_force = openmm.CustomNonbondedForce(energy_function)
-custom_force.addGlobalParameter('exp0', 2.718281828459045)
-custom_force.addGlobalParameter('amplitude_all',-0.4*kilocalories_per_mole)
-custom_force.addPerParticleParameter('amplitude_i')
-custom_force.addGlobalParameter('sigma1',0.10*angstrom)
-custom_force.addGlobalParameter('sigma2',0.20*angstrom)
-custom_force.addGlobalParameter('sigma3',0.30*angstrom)
-custom_force.addGlobalParameter('sigma4',0.20*angstrom)
-
-custom_force.addGlobalParameter('mu1',3.1*angstrom)
-custom_force.addGlobalParameter('mu2',3.9*angstrom)
-custom_force.addGlobalParameter('mu3',3.35*angstrom)
-custom_force.addGlobalParameter('mu4',4.5*angstrom)
-custom_force.addGlobalParameter('u_max',4.1196*angstrom)
-custom_force.setNonbondedMethod(NonbondedForce.CutoffPeriodic)
-custom_force.setCutoffDistance(1*nanometer) 
-
-for  i in range(topology.getNumAtoms()):
-    if i in o_particles1:
-        custom_force.addParticle([0.5])
-    else:
-        custom_force.addParticle([0])
-
-for i in range(0,4536,1):
-    system.setParticleMass(i, 0*amu)
-
-custom_force.addInteractionGroup(o_particles1, o_particles2)
-custom_force.setForceGroup(1)
-system.addForce(custom_force)
-
 
 integrator = LangevinMiddleIntegrator(temperature, friction, dt)
 simulation = Simulation(topology, system, integrator, platform, platformProperties)
